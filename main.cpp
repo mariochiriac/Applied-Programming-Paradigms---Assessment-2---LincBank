@@ -15,21 +15,32 @@ Good luck!
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <ctime>
+#include <sstream>
+
+// Headers
+#include "BankAccounts.h"
+
+using namespace std;
+
+// Declare Methods
+
+string getTime();
 
 int main()
 {
-	std::vector <std::string> parameters;
-	std::string userCommand;
+	vector <string> parameters;
+	string userCommand;
 	// you may also want to store a collection of opened accounts here
 
-	std::cout << "~~~ Welcome to LincBank! ~~~" << std::endl;
+	cout << "~~~ Welcome to LincBank! ~~~" << endl;
 
 	while (userCommand != "exit")
 	{
 		parameters.clear(); // clear ready for next command
-		std::cout << std::endl << ">>> ";
+		cout << endl << ">>> ";
 
-		std::getline(std::cin, userCommand);
+		getline(cin, userCommand);
 		char* cstr = new char[userCommand.length() + 1];
 		strcpy(cstr, userCommand.c_str());
 
@@ -43,7 +54,7 @@ int main()
 		}
 
 		// Define all commands as per the brief
-		std::string command = parameters[0];
+		string command = parameters[0];
 
 		if (command.compare("options") == 0)
 		{
@@ -53,6 +64,9 @@ int main()
 		{
 			// allow a user to open an account
 			// e.g., Account* a = new Savings(...);
+			Account* a = new Account();
+			a->deposit(1000, getTime());
+			a->toString();
 		}
 		else if (command.compare("view") == 0)
 		{
@@ -84,8 +98,19 @@ int main()
 
 	}
 
-	std::cout << "Press any key to quit...";
-	std::getchar();
+	cout << "Press ENTER to quit...";
+	return getchar();
+}
+
+// Implementation of functions
+
+string getTime() {
+	// Get current time
+	time_t timestamp;
+	time(&timestamp);
+
+	// Convert the current time to local time
+	return ctime(&timestamp);
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
