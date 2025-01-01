@@ -14,9 +14,9 @@ Good luck!
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <sstream>
+#include <memory>
 #include <vector>
 #include <ctime>
-#include <sstream>
 
 // Headers
 #include "BankAccounts.h"
@@ -25,13 +25,13 @@ using namespace std;
 
 // Declare Methods
 
-string getTime();
-
 int main()
 {
 	vector <string> parameters;
 	string userCommand;
 	// you may also want to store a collection of opened accounts here
+
+	vector <Account> accounts; // accounts created will be stored in vector
 
 	cout << "~~~ Welcome to LincBank! ~~~" << endl;
 
@@ -65,7 +65,7 @@ int main()
 			// allow a user to open an account
 			// e.g., Account* a = new Savings(...);
 			Account* a = new Account();
-			a->deposit(1000, getTime());
+			a->deposit(1000);
 			a->toString();
 		}
 		else if (command.compare("view") == 0)
@@ -103,15 +103,6 @@ int main()
 }
 
 // Implementation of functions
-
-string getTime() {
-	// Get current time
-	time_t timestamp;
-	time(&timestamp);
-
-	// Convert the current time to local time
-	return ctime(&timestamp);
-}
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu

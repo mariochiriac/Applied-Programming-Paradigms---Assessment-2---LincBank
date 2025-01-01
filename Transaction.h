@@ -5,11 +5,16 @@
 using namespace std;
 
 // Struct to represent a transaction
-struct Transaction {
+class Transaction {
+private:
 	string desc; // Nature of transaction
-	string date; // date, e.g. "2025-01-01, 00:00"
-	double value; //
-	void toString() {
-		std::cout << desc << ": " << char(156)  << value << " on " << date << endl;
+	string timestamp; // date, e.g. "2025-01-01, 00:00"
+	double value; // amount
+public:
+	Transaction(const string& description, double val) : desc(description), value(val) { 
+		timestamp = getTime();
 	}
+
+	void toString();
+	string getTime();
 };

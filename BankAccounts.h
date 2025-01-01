@@ -17,9 +17,10 @@ public:
 	// Constructor
 	Account(double initialBalance = 0) : balance(initialBalance) {
 		cout << "Account has been created." << endl;
+		history.push_back(Transaction("initial deposit", initialBalance));
 	}
 
-	virtual void deposit(double amount, const string& date);
+	virtual void deposit(double amount);
 	virtual void toString();
 	//virtual void withdraw(double amount);
 };

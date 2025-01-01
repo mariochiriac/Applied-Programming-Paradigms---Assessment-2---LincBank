@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="BankAccounts.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Transaction.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BankAccounts.h" />

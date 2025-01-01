@@ -8,12 +8,12 @@
 using namespace std;
 
 // Method to add deposit
-void Account::deposit(double amount, const string&date) {
+void Account::deposit(double amount) {
 	balance += amount;
-	history.push_back({ "deposit", date, amount });
-	history[0].toString();
+	history.push_back(Transaction("deposit", amount)); // Adds transaction to list
 }
 
+// Outputs account details
 void Account::toString() {
 	cout << "--- Current Account ---" <<
 		"\nBalance: " << balance << endl;
