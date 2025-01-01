@@ -20,13 +20,28 @@ public:
 		history.push_back(Transaction("initial deposit", initialBalance));
 	}
 
+	// Deconstructor
+	virtual ~Account()
+	{
+
+	}
+
 	virtual void deposit(double amount);
+	virtual void withdraw(double amount);
 	virtual void toString();
 	//virtual void withdraw(double amount);
 };
 
 class Current : public Account {
-	Current() {
-
+private:
+	double overdraft;
+public:
+	Current(double initialBalance = 0) : Account(initialBalance) {
+		cout << "Current account created!" << endl;
+		overdraft = 500;
 	}
+
+	void deposit(double amount);
+	void withdraw(double amount);
+	void toString();
 };

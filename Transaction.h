@@ -11,6 +11,14 @@ private:
 	string timestamp; // date, e.g. "2025-01-01, 00:00"
 	double value; // amount
 public:
+	// Default Constructor
+	Transaction() {
+		desc = "invalid";
+		timestamp = getTime();
+		value = 0;
+	}
+
+	// Constructor
 	Transaction(const string& description, double val) : desc(description), value(val) { 
 		timestamp = getTime();
 	}
