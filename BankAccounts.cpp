@@ -23,8 +23,11 @@ void Account::withdraw(double amount) {
 
 // Outputs account details
 void Account::toString() {
-	cout << "--- Current Account ---" <<
-		"\nBalance: " << balance << endl;
+	cout << "Account | Balance: " << char(156) << balance << endl;
+	for (auto i : history) {
+		// Output all transactions
+		i.toString();
+	}
 }
 
 void Current::deposit(double amount) {
@@ -71,5 +74,38 @@ void Current::withdraw(double amount) {
 }
 
 void Current::toString() {
+	if (overdraft > 0) {
+		cout << "Current Account | Balance: -" << char(156) << overdraft << endl;
+	}
+	else cout << "Current Account | Balance: " << char(156) << balance << endl;
+	for (auto i : history) {
+		i.toString();
+	}
+}
 
+void Savings::deposit(double amount) {
+	balance += amount;
+	history.push_back(Transaction("deposit", amount)); // Adds transaction to list
+}
+
+void Savings::withdraw(double amount) {
+	if (amount < balance) {
+		balance -= amount;
+		history.push_back(Transaction("withdraw", amount));
+	}
+	else cout << "Insufficient Balance! Current Balance:" << balance << endl;
+}
+
+void Savings::toString() {
+	cout << (isa ? "ISA" : "Savings" ) << " | Balance: " << char(156) << balance << endl;
+	for (auto i : history) {
+		// Output all transactions
+		i.toString();
+	}
+}
+
+void Savings::computeInterest(int years) {
+	const int n = 12;
+	double A = balance * pow(1 + (interestRate / n), n * years);
+	cout << "Projected Balance: " << char(156) << A << endl;
 }

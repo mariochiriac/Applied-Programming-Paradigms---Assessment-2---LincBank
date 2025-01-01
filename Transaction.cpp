@@ -6,7 +6,7 @@
 
 // Method that outputs to console details of transaction
 void Transaction::toString() {
-	std::cout << desc << ": " << char(156) << value << " on " << timestamp << endl;
+	std::cout << "-- " << desc << ": " << char(156) << value << " on " << timestamp << endl;
 }
 
 // Method, gets current time when transaction struct is called, adds it to timestamp member
