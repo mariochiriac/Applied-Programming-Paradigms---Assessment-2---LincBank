@@ -24,7 +24,7 @@ Good luck!
 using namespace std;
 
 // Declare Methods
-void view_accounts(vector<Account> accounts);
+void view_accounts(vector<Account*> accounts);
 
 int main()
 {
@@ -33,7 +33,7 @@ int main()
 		string userCommand;
 		// you may also want to store a collection of opened accounts here
 
-		vector<Account> accounts; // accounts created will be stored in vector
+		vector<Account*> accounts; // accounts created will be stored in vector
 
 		cout << "~~~ Welcome to LincBank! ~~~" << endl;
 		cout << "open type initial_deposit: open a current (1), savings (2) or ISA (3) account" <<
@@ -96,13 +96,17 @@ int main()
 				// Based on the account type, create the appropriate account
 				if (accountType == 1) {
 					// Open a Current account and add it to the accounts vector
-					accounts.push_back(Current(initialDeposit));
+					accounts.push_back(new Current(initialDeposit));
 				}
 				else if (accountType == 2) {
-					accounts.push_back(Savings(initialDeposit, 0));
+					accounts.push_back(new Savings(initialDeposit, 0));
 				}
 				else if (accountType == 3) {
-					accounts.push_back(Savings(initialDeposit, 1));
+					if (initialDeposit < 1000) {
+						// If initial deposit is smaller than 1000, output an error to console
+						cout << "ISA initial balance must be >= " << char(156) << "1000." << endl;
+					}
+					else accounts.push_back(new Savings(initialDeposit, 1));
 				}
 				else {
 					// Invalid account type
@@ -140,7 +144,9 @@ int main()
 			//}
 
 		}
-
+		for (auto& account : accounts) {
+			delete account;
+		}
 		cout << "Press ENTER to quit...";
 		return getchar();
 	}
@@ -149,9 +155,9 @@ int main()
 	}
 }
 
-void view_accounts(vector<Account> accounts) {
+void view_accounts(vector<Account*> accounts) {
 	for (auto& i : accounts) {
-		i.toString();
+		i->toString();
 	}
 }
 
