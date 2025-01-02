@@ -16,20 +16,19 @@ protected:
 public:
 	// Constructor
 	Account(double initialBalance = 0) : balance(initialBalance) {
-		cout << "Account has been created." << endl;
 		history.push_back(Transaction("initial deposit", initialBalance));
 	}
 
 	// Deconstructor
-	virtual ~Account()
-	{
-
-	}
+	virtual ~Account() { }
 
 	virtual void deposit(double amount);
 	virtual void withdraw(double amount);
 	virtual void toString();
-	//virtual void withdraw(double amount);
+
+	// Operator Overloading for transfers
+	Account& operator-(double amount);
+	Account& operator+(double amount);
 };
 
 class Current : public Account {
@@ -38,7 +37,7 @@ private:
 public:
 	Current(double initialBalance = 0) : Account(initialBalance) {
 		cout << "Current account created!" << endl;
-		overdraft = 500;
+		overdraft = 0;
 	}
 
 	void deposit(double amount);
@@ -48,10 +47,10 @@ public:
 
 class InterestEarning {
 public:
-	virtual void computeInterest(int years) const = 0;
+	virtual void computeInterest(int years) = 0;
 };
 
-class Savings : public Account, InterestEarning {
+class Savings : public Account, public InterestEarning {
 private:
 	double interestRate;
 	bool isa;
@@ -64,7 +63,7 @@ public:
 
 		balance = initialBalance; // Set balance if valid
 		interestRate = isISA ? 0.0115 : 0.0085;
-		cout << (isa ? "ISA" : "Savings") << "created!" << endl;
+		cout << (isa ? "ISA" : "Savings") << " created!" << endl;
 
 		// Add initial deposit transaction
 		history.push_back(Transaction("initial deposit", balance));

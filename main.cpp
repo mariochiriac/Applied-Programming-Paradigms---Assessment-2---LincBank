@@ -24,82 +24,135 @@ Good luck!
 using namespace std;
 
 // Declare Methods
+void view_accounts(vector<Account> accounts);
 
 int main()
 {
-	vector <string> parameters;
-	string userCommand;
-	// you may also want to store a collection of opened accounts here
+	try {
+		vector <string> parameters;
+		string userCommand;
+		// you may also want to store a collection of opened accounts here
 
-	vector <Account> accounts; // accounts created will be stored in vector
+		vector<Account> accounts; // accounts created will be stored in vector
 
-	cout << "~~~ Welcome to LincBank! ~~~" << endl;
+		cout << "~~~ Welcome to LincBank! ~~~" << endl;
+		cout << "open type initial_deposit: open a current (1), savings (2) or ISA (3) account" <<
+			"\nview[index]: view balance and recent transactions" <<
+			"\nwithdraw sum : withdraw funds from most recently viewed account"
+			"\ndeposit sum : deposit funds into most recently viewed account"
+			"\ntransfer src dest sum : transfer funds between accounts"
+			"\nproject years : project balance forward in time"
+			"\nexit : close this application"
+			"\noptions : view these options again" << endl;
 
-	while (userCommand != "exit")
-	{
-		parameters.clear(); // clear ready for next command
-		cout << endl << ">>> ";
-
-		getline(cin, userCommand);
-		char* cstr = new char[userCommand.length() + 1];
-		strcpy(cstr, userCommand.c_str());
-
-		char* token;
-		token = strtok(cstr, " ");
-
-		while (token != NULL)
+		while (userCommand != "exit")
 		{
-			parameters.push_back(token);
-			token = strtok(NULL, " ");
+			parameters.clear(); // clear ready for next command
+			cout << endl << ">>> ";
+
+			getline(cin, userCommand);
+			char* cstr = new char[userCommand.length() + 1];
+			strcpy(cstr, userCommand.c_str());
+
+			char* token;
+			token = strtok(cstr, " ");
+
+			while (token != NULL)
+			{
+				parameters.push_back(token);
+				token = strtok(NULL, " ");
+			}
+
+			// Define all commands as per the brief
+			string command = parameters[0];
+
+			if (command.compare("options") == 0)
+			{
+				// display the various commands to the user
+				cout << "open type initial_deposit: open a current (1), savings (2) or ISA (3) account" <<
+					"\nview[index]: view balance and recent transactions" <<
+					"\nwithdraw sum : withdraw funds from most recently viewed account"
+					"\ndeposit sum : deposit funds into most recently viewed account"
+					"\ntransfer src dest sum : transfer funds between accounts"
+					"\nproject years : project balance forward in time"
+					"\nexit : close this application"
+					"\noptions : view these options again" << endl;
+			}
+			else if (command.compare("open") == 0)
+			{
+				// allow a user to open an account
+				// e.g., Account* a = new Savings(...);
+				// 
+				// Ensure that the user has provided the correct parameters
+				if (parameters.size() < 3) {
+					cout << "Invalid input. Usage: open <account_type> <initial_deposit>" << endl;
+					continue;  // Skip to the next command
+				}
+
+				// Extract account type (1 for Current, 2 for Savings, 3 for ISA) and initial deposit
+				int accountType = stoi(parameters[1]);  // Convert the account type to an integer
+				double initialDeposit = stod(parameters[2]);  // Convert the initial deposit to a double
+
+				// Based on the account type, create the appropriate account
+				if (accountType == 1) {
+					// Open a Current account and add it to the accounts vector
+					accounts.push_back(Current(initialDeposit));
+				}
+				else if (accountType == 2) {
+					accounts.push_back(Savings(initialDeposit, 0));
+				}
+				else if (accountType == 3) {
+					accounts.push_back(Savings(initialDeposit, 1));
+				}
+				else {
+					// Invalid account type
+					cout << "Invalid account type. Please choose 1 (Current), 2 (Savings), or 3 (ISA)." << endl;
+				}
+
+			}
+			else if (command.compare("view") == 0)
+			{
+				// display an account according to an index (starting from 1)
+				// alternatively, display all accounts if no index is provided
+				view_accounts(accounts);
+			}
+			else if (command.compare("withdraw") == 0)
+			{
+				// allow user to withdraw funds from an account
+			}
+			else if (command.compare("deposit") == 0)
+			{
+				// allow user to deposit funds into an account
+			}
+			else if (command.compare("transfer") == 0)
+			{
+				// allow user to transfer funds between accounts
+				// i.e., a withdrawal followed by a deposit!
+			}
+			else if (command.compare("project") == 0)
+			{
+				// compute compound interest t years into the future
+			}
+			//else if (command.compare("search"))
+			//{
+			//	allow users to search their account history for a transaction
+			//  (this is a stretch task)
+			//}
+
 		}
 
-		// Define all commands as per the brief
-		string command = parameters[0];
-
-		if (command.compare("options") == 0)
-		{
-			// display the various commands to the user
-		}
-		else if (command.compare("open") == 0)
-		{
-			// allow a user to open an account
-			// e.g., Account* a = new Savings(...);
-			Account* a = new Account();
-			a->deposit(1000);
-			a->toString();
-		}
-		else if (command.compare("view") == 0)
-		{
-			// display an account according to an index (starting from 1)
-			// alternatively, display all accounts if no index is provided
-		}
-		else if (command.compare("withdraw") == 0)
-		{
-			// allow user to withdraw funds from an account
-		}
-		else if (command.compare("deposit") == 0)
-		{
-			// allow user to deposit funds into an account
-		}
-		else if (command.compare("transfer") == 0)
-		{
-			// allow user to transfer funds between accounts
-			// i.e., a withdrawal followed by a deposit!
-		}
-		else if (command.compare("project") == 0)
-		{
-			// compute compound interest t years into the future
-		}
-		//else if (command.compare("search"))
-		//{
-		//	allow users to search their account history for a transaction
-		//  (this is a stretch task)
-		//}
-
+		cout << "Press ENTER to quit...";
+		return getchar();
 	}
+	catch (const exception& e) {
+		cout << "Error: " << e.what() << endl;
+	}
+}
 
-	cout << "Press ENTER to quit...";
-	return getchar();
+void view_accounts(vector<Account> accounts) {
+	for (auto& i : accounts) {
+		i.toString();
+	}
 }
 
 // Implementation of functions

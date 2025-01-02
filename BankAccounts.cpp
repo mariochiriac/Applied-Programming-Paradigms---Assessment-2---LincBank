@@ -109,3 +109,21 @@ void Savings::computeInterest(int years) {
 	double A = balance * pow(1 + (interestRate / n), n * years);
 	cout << "Projected Balance: " << char(156) << A << endl;
 }
+
+// Operator Overload for Transfer (Withdrawal)
+Account& Account::operator-(double amount) {
+	if (balance >= amount) {
+		balance -= amount;
+		cout << "Transfer successful!" << endl;
+	} 
+	else {
+		cout << "Insufficient funds for transfer!" << endl;
+	}
+	return *this;
+}
+
+// Operator Overload for Deposit
+Account& Account::operator+(double amount) {
+	balance += amount;
+	return *this;
+}
