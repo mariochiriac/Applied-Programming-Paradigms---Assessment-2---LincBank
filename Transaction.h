@@ -25,4 +25,5 @@ public:
 
 	void toString();
 	string getTime();
+
 };

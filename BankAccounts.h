@@ -27,10 +27,11 @@ public:
 	virtual void deposit(double amount);
 	virtual void withdraw(double amount);
 	virtual void toString();
+	virtual void transfer(vector<Account*> accounts, int srcIndex, int destIndex, double amount);
 
 	// Operator Overloading for transfers
-	Account& operator-(double amount);
-	Account& operator+(double amount);
+	virtual bool operator-(double amount); // Operator that will take money out of an account
+	virtual Account& operator+(double amount); // Operator that will introduce money into an account
 };
 
 class Current : public Account {
@@ -45,6 +46,10 @@ public:
 	void deposit(double amount);
 	void withdraw(double amount);
 	void toString();
+
+	// Overload Operator to ensure functionality for overdraft
+	virtual bool operator-(double amount);
+	virtual Account& operator+(double amount);
 };
 
 class InterestEarning {

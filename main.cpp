@@ -118,20 +118,83 @@ int main()
 			{
 				// display an account according to an index (starting from 1)
 				// alternatively, display all accounts if no index is provided
-				view_accounts(accounts);
+				if (parameters.size() > 1) {
+					// Take parameter as account index
+					int accountIndex = stoi(parameters[1]);
+
+					// Check if account exists
+					if (accountIndex < 0 || accountIndex > accounts.size()) {
+						cout << "The selected account does not exist. Please select a valid account." << endl;
+					} 
+					else accounts[accountIndex - 1]->toString();
+				}
+				else view_accounts(accounts);
 			}
 			else if (command.compare("withdraw") == 0)
 			{
 				// allow user to withdraw funds from an account
+				// Input Check
+				if (parameters.size() < 3) {
+					cout << "Invalid input. Usage: withdraw <account_index> <withdraw_amount>" << endl;
+					continue;  // Skip to the next command
+				}
+
+				// allow user to deposit funds into an account
+				int accountIndex = stoi(parameters[1]);  // Convert the account chosen to an integer
+				double amount = stod(parameters[2]);  // Convert the deposit to a double
+
+				if (accountIndex < 0 || accountIndex > accounts.size()) {
+					cout << "The selected account does not exist. Please select a valid account." << endl;
+				}
+				else {
+					accounts[accountIndex - 1]->withdraw(amount);
+				}
 			}
 			else if (command.compare("deposit") == 0)
 			{
+				// Input Check
+				if (parameters.size() < 3) {
+					cout << "Invalid input. Usage: deposit <account_index> <deposit_amount>" << endl;
+					continue;  // Skip to the next command
+				}
+
 				// allow user to deposit funds into an account
+				int accountIndex = stoi(parameters[1]);  // Convert the account chosen to an integer
+				double amount = stod(parameters[2]);  // Convert the deposit to a double
+
+				if (accountIndex < 0 || accountIndex > accounts.size()) {
+					cout << "The selected account does not exist. Please select a valid account." << endl;
+				}
+				else {
+					accounts[accountIndex - 1]->deposit(amount);
+				}
 			}
 			else if (command.compare("transfer") == 0)
 			{
 				// allow user to transfer funds between accounts
 				// i.e., a withdrawal followed by a deposit!
+				// Input Check
+				if (parameters.size() < 4) {
+					cout << "Invalid input. Usage: transfer <source_index> <destination_index> <amount>" << endl;
+					continue;  // Skip to the next command
+				}
+
+
+				// allow user to deposit funds into an account
+				int sourceIndex = stoi(parameters[1]);  // Convert the account chosen to an integer
+				int destinationIndex = stoi(parameters[2]);  // Convert the account chosen to an integer
+				double amount = stod(parameters[3]);  // Convert the deposit to a double
+
+				if (sourceIndex && destinationIndex < 0 || sourceIndex && destinationIndex > accounts.size()) {
+					cout << "The selected account does not exist. Please select a valid account." << endl;
+					continue;
+				}
+				else if (sourceIndex == destinationIndex) {
+					cout << "Cannot transfer money to the same account. Please enter a valid destination account." << endl;
+					continue;
+				}
+
+				accounts[sourceIndex - 1]->transfer(accounts, sourceIndex, destinationIndex, amount);
 			}
 			else if (command.compare("project") == 0)
 			{
