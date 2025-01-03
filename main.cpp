@@ -93,6 +93,11 @@ int main()
 				int accountType = stoi(parameters[1]);  // Convert the account type to an integer
 				double initialDeposit = stod(parameters[2]);  // Convert the initial deposit to a double
 
+				if (initialDeposit < 100) {
+					cout << "You have entered an invalid initial deposit value. Please enter a valid amount." << endl;
+					continue;
+				}
+
 				// Based on the account type, create the appropriate account
 				if (accountType == 1) {
 					// Open a Current account and add it to the accounts vector

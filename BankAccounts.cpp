@@ -20,7 +20,7 @@ void Account::withdraw(double amount) {
 		history.push_back(Transaction("withdraw", amount));
 		toString();
 	}
-	else cout << "Insufficient Balance! Current Balance:" << balance << endl;
+	else cout << "Insufficient Balance! Current Balance: " << char(156) << balance << endl;
 }
 
 // Outputs account details
@@ -59,6 +59,7 @@ void Current::withdraw(double amount) {
 		// Sufficient balance in the account to cover the withdrawal
 		balance -= amount;
 		history.push_back(Transaction("withdraw", amount));
+		toString();
 	}
 	else {
 		// Withdrawal requires overdraft but does not exceed the overdraft limit
@@ -67,6 +68,7 @@ void Current::withdraw(double amount) {
 			balance = 0; // Deplete balance
 			overdraft += remaining; // Add the rest to overdraft
 			history.push_back(Transaction("withdraw", amount));
+			toString();
 		}
 		else {
 			cout << "Insufficient balance!" << endl;
@@ -163,9 +165,7 @@ bool Current::operator-(double amount) {
 			overdraft += remaining; // Add the rest to overdraft
 			return true;
 		}
-
 		// Insufficient Funds
-		cout << "Insufficient balance!" << endl;
 		return false;
 	}
 }
