@@ -34,6 +34,7 @@ int main()
 		// you may also want to store a collection of opened accounts here
 
 		vector<Account*> accounts; // accounts created will be stored in vector
+		Savings* isa_account = nullptr;
 
 		cout << "~~~ Welcome to LincBank! ~~~" << endl;
 		cout << "open type initial_deposit: open a current (1), savings (2) or ISA (3) account" <<
@@ -106,12 +107,23 @@ int main()
 				else if (accountType == 2) {
 					accounts.push_back(new Savings(initialDeposit, 0));
 				}
+				// Opening ISA Account
 				else if (accountType == 3) {
-					if (initialDeposit < 1000) {
-						// If initial deposit is smaller than 1000, output an error to console
-						cout << "ISA initial balance must be >= " << char(156) << "1000." << endl;
+					if (isa_account == nullptr) {
+						if (initialDeposit < 1000) {
+							// If initial deposit is smaller than 1000, output an error to console
+							cout << "ISA initial balance must be >= " << char(156) << "1000." << endl;
+						}
+						else {
+							// If ISA account is sucessfully created, appoint a pointer to a new ISA, and append to vector
+							isa_account = new Savings(initialDeposit, 1);
+							accounts.push_back(isa_account);
+						}
 					}
-					else accounts.push_back(new Savings(initialDeposit, 1));
+					else {
+						cout << "ISA account already exists." << endl;
+						continue;
+					}
 				}
 				else {
 					// Invalid account type
@@ -186,8 +198,8 @@ int main()
 
 
 				// allow user to deposit funds into an account
-				int sourceIndex = stoi(parameters[1]);  // Convert the account chosen to an integer
-				int destinationIndex = stoi(parameters[2]);  // Convert the account chosen to an integer
+				int sourceIndex = stoi(parameters[1]);  // Convert the source account chosen to an integer
+				int destinationIndex = stoi(parameters[2]);  // Convert the destination account chosen to an integer
 				double amount = stod(parameters[3]);  // Convert the deposit to a double
 
 				if (sourceIndex && destinationIndex < 0 || sourceIndex && destinationIndex > accounts.size()) {
@@ -204,6 +216,20 @@ int main()
 			else if (command.compare("project") == 0)
 			{
 				// compute compound interest t years into the future
+				// Check parameters
+				if (parameters.size() < 2) {
+					cout << "Invalid input. Usage: project <years>" << endl;
+					continue;  // Skip to the next command
+				}
+				
+				int years = stoi(parameters[1]);
+
+				if (isa_account == nullptr) {
+					// If ISA account does not exist, output to console
+					cout << "ISA account does not exist. Unable to project balance." << endl;
+					continue;
+				}
+				else isa_account->computeInterest(years);
 			}
 			//else if (command.compare("search"))
 			//{

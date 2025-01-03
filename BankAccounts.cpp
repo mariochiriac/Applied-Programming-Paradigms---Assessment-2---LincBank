@@ -111,7 +111,8 @@ void Savings::toString() {
 
 void Savings::computeInterest(int years) {
 	const int n = 12;
-	double A = balance * pow(1 + (interestRate / n), n * years);
+	float A = balance * pow(1 + (interestRate / n), n * years);
+
 	cout << "Projected Balance: " << char(156) << A << endl;
 }
 
