@@ -10,8 +10,7 @@ using namespace std;
 
 // Method that outputs to console details of transaction
 void Transaction::toString() {
-	if (value < 0) cout << "-- " << desc << ": " << "-" << char(156) << value << " on " << timestamp;
-	else cout << "-- " << desc << ": " << char(156) << value << " on " << timestamp;
+	cout << "-- " << desc << ": " << char(156) << value << " on " << timestamp;
 }
 
 // Method, gets current time when transaction struct is called, adds it to timestamp member
