@@ -34,7 +34,8 @@ int main()
 		// you may also want to store a collection of opened accounts here
 
 		vector<Account*> accounts; // accounts created will be stored in vector
-		Savings* isa_account = nullptr;
+		Savings* isa_account = nullptr; // pointer to isa account
+		Account* viewedAccount = nullptr; // pointer to viewed account
 
 		cout << "~~~ Welcome to LincBank! ~~~" << endl;
 		cout << "open type initial_deposit: open a current (1), savings (2) or ISA (3) account" <<
@@ -91,45 +92,44 @@ int main()
 				}
 
 				// Extract account type (1 for Current, 2 for Savings, 3 for ISA) and initial deposit
-				int accountType = stoi(parameters[1]);  // Convert the account type to an integer
-				double initialDeposit = stod(parameters[2]);  // Convert the initial deposit to a double
+				int accountType = stoi(parameters[1]);  // Convert account type to integer
+				double initialDeposit = stod(parameters[2]);  // Convert initial deposit to double
 
 				if (initialDeposit < 100) {
 					cout << "You have entered an invalid initial deposit value. Please enter a valid amount." << endl;
 					continue;
 				}
 
-				// Based on the account type, create the appropriate account
-				if (accountType == 1) {
-					// Open a Current account and add it to the accounts vector
+				// Based on the account type, create account selected
+				switch (accountType) {
+				case 1:
 					accounts.push_back(new Current(initialDeposit));
-				}
-				else if (accountType == 2) {
+					break;
+				case 2:
 					accounts.push_back(new Savings(initialDeposit, 0));
-				}
-				// Opening ISA Account
-				else if (accountType == 3) {
+					break;
+				case 3:
 					if (isa_account == nullptr) {
 						if (initialDeposit < 1000) {
 							// If initial deposit is smaller than 1000, output an error to console
 							cout << "ISA initial balance must be >= " << char(156) << "1000." << endl;
+							break;
 						}
 						else {
 							// If ISA account is sucessfully created, appoint a pointer to a new ISA, and append to vector
 							isa_account = new Savings(initialDeposit, 1);
 							accounts.push_back(isa_account);
+							break;
 						}
 					}
 					else {
 						cout << "ISA account already exists." << endl;
-						continue;
+						break;
 					}
-				}
-				else {
-					// Invalid account type
+				default:
 					cout << "Invalid account type. Please choose 1 (Current), 2 (Savings), or 3 (ISA)." << endl;
+					break;
 				}
-
 			}
 			else if (command.compare("view") == 0)
 			{
@@ -143,22 +143,25 @@ int main()
 					if (accountIndex < 0 || accountIndex > accounts.size()) {
 						cout << "The selected account does not exist. Please select a valid account." << endl;
 					} 
-					else accounts[accountIndex - 1]->toString();
+					else {
+						accounts[accountIndex - 1]->toString();
+						viewedAccount = accounts[accountIndex - 1]; // set as viewed account
+					}
 				}
 				else view_accounts(accounts);
 			}
 			else if (command.compare("withdraw") == 0)
 			{
 				// allow user to withdraw funds from an account
-				// Input Check
+				// check input
 				if (parameters.size() < 3) {
 					cout << "Invalid input. Usage: withdraw <account_index> <withdraw_amount>" << endl;
 					continue;  // Skip to the next command
 				}
 
 				// allow user to deposit funds into an account
-				int accountIndex = stoi(parameters[1]);  // Convert the account chosen to an integer
-				double amount = stod(parameters[2]);  // Convert the deposit to a double
+				int accountIndex = stoi(parameters[1]);  // Convert the account chosen to integer
+				double amount = stod(parameters[2]);  // Convert the deposit to double
 
 				if (accountIndex < 0 || accountIndex > accounts.size()) {
 					cout << "The selected account does not exist. Please select a valid account." << endl;
@@ -169,21 +172,41 @@ int main()
 			}
 			else if (command.compare("deposit") == 0)
 			{
-				// Input Check
-				if (parameters.size() < 3) {
-					cout << "Invalid input. Usage: deposit <account_index> <deposit_amount>" << endl;
-					continue;  // Skip to the next command
-				}
-
 				// allow user to deposit funds into an account
-				int accountIndex = stoi(parameters[1]);  // Convert the account chosen to an integer
-				double amount = stod(parameters[2]);  // Convert the deposit to a double
-
-				if (accountIndex < 0 || accountIndex > accounts.size()) {
-					cout << "The selected account does not exist. Please select a valid account." << endl;
+				// Input Check
+				if (parameters.size() < 2) {
+					cout << "Invalid input. Usage: deposit <sum> after viewing an account. Alternative usage: deposit <account_index> <sum>." << endl;
+					continue;
 				}
-				else {
-					accounts[accountIndex - 1]->deposit(amount);
+
+				int accountIndex;  // Convert account chosen to integer
+				double amount;  // Convert deposit to double
+				int parametersSize = parameters.size();
+
+				switch (parametersSize)
+				{
+				case 2: // Input is deposit <sum>
+					// Check if account has been viewed
+					amount = stod(parameters[1]); // set second parameter as the amount
+
+					if (viewedAccount != nullptr) {
+						viewedAccount->deposit(amount);
+					}
+					else cout << "You have not viewed an account yet. Please use view <account_index>. Alternative usage: deposit <account_index> <sum>." << endl;
+					break;
+				case 3: // Input is deposit <account_index> <sum>
+					accountIndex = stoi(parameters[1]);
+					amount = stod(parameters[2]);
+					if (accountIndex <= 0 || accountIndex > accounts.size()) {
+						cout << "The selected account does not exist. Please select a valid account." << endl;
+					}
+					else {
+						accounts[accountIndex - 1]->deposit(amount);
+					}
+					break;
+				default:
+					cout << "Invalid usage. Please use deposit <sum>. Alternative usage: deposit <account_index> <sum>." << endl;
+					break;
 				}
 			}
 			else if (command.compare("transfer") == 0)
@@ -241,6 +264,8 @@ int main()
 		for (auto& account : accounts) {
 			delete account;
 		}
+		delete isa_account;
+		delete viewedAccount;
 		cout << "Press ENTER to quit...";
 		return getchar();
 	}
