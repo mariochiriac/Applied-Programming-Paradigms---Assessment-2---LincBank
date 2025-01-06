@@ -15,12 +15,15 @@ void Account::deposit(double amount) {
 }
 
 void Account::withdraw(double amount) {
-	if (amount < balance) {
-		balance -= amount;
-		history.push_back(Transaction("withdraw", amount));
-		toString();
+	if (amount <= 0) cout << "Invalid input. You can only withdraw amounts of positive integers." << endl;
+	else {
+		if (amount < balance) {
+			balance -= amount;
+			history.push_back(Transaction("withdraw", amount));
+			toString();
+		}
+		else cout << "Insufficient Balance! Current Balance: " << char(156) << balance << endl;
 	}
-	else cout << "Insufficient Balance! Current Balance: " << char(156) << balance << endl;
 }
 
 // Outputs account details
@@ -55,23 +58,26 @@ void Current::deposit(double amount) {
 }
 
 void Current::withdraw(double amount) {
-	if (amount <= balance) {
-		// Sufficient balance in the account to cover the withdrawal
-		balance -= amount;
-		history.push_back(Transaction("withdraw", amount));
-		toString();
-	}
+	if (amount <= 0) cout << "Invalid input. You can only withdraw amounts of positive integers." << endl;
 	else {
-		// Withdrawal requires overdraft but does not exceed the overdraft limit
-		if (amount <= ((500 - overdraft) + balance)) {
-			double remaining = amount - balance; // // Calculate the amount needed from overdraft
-			balance = 0; // Deplete balance
-			overdraft += remaining; // Add the rest to overdraft
+		if (amount <= balance) {
+			// Sufficient balance in the account to cover the withdrawal
+			balance -= amount;
 			history.push_back(Transaction("withdraw", amount));
 			toString();
 		}
 		else {
-			cout << "Insufficient balance!" << endl;
+			// Withdrawal requires overdraft but does not exceed the overdraft limit
+			if (amount <= ((500 - overdraft) + balance)) {
+				double remaining = amount - balance; // // Calculate the amount needed from overdraft
+				balance = 0; // Deplete balance
+				overdraft += remaining; // Add the rest to overdraft
+				history.push_back(Transaction("withdraw", amount));
+				toString();
+			}
+			else {
+				cout << "Insufficient balance!" << endl;
+			}
 		}
 	}
 }
@@ -93,12 +99,15 @@ void Savings::deposit(double amount) {
 }
 
 void Savings::withdraw(double amount) {
-	if (amount < balance) {
-		balance -= amount;
-		history.push_back(Transaction("withdraw", amount));
-		toString();
+	if (amount <= 0) cout << "Invalid input. You can only withdraw amounts of positive integers." << endl;
+	else {
+		if (amount < balance) {
+			balance -= amount;
+			history.push_back(Transaction("withdraw", amount));
+			toString();
+		}
+		else cout << "Insufficient Balance! Current Balance:" << balance << endl;
 	}
-	else cout << "Insufficient Balance! Current Balance:" << balance << endl;
 }
 
 void Savings::toString() {

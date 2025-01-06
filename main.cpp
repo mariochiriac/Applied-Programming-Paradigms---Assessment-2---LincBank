@@ -10,6 +10,13 @@ You should avoid removing parts of this driver program, but
 add to it the necessary code to produce your implementation.
 
 Good luck!
+
+TO DO:
+
+1. Fix transfer, when invalid index is input the program crashed with vector out of subscript range
+2. Implement search
+3. TEST TEST TESTING TEST TEST TESTING!!
+
 ------------------------------------------------------ */
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
@@ -154,20 +161,39 @@ int main()
 			{
 				// allow user to withdraw funds from an account
 				// check input
-				if (parameters.size() < 3) {
-					cout << "Invalid input. Usage: withdraw <account_index> <withdraw_amount>" << endl;
-					continue;  // Skip to the next command
+				if (parameters.size() < 2) {
+					cout << "Invalid input. Usage: withdraw <sum> after viewing an account. Alternative usage: withdraw <account_index> <sum>." << endl;
+					continue;
 				}
 
-				// allow user to deposit funds into an account
-				int accountIndex = stoi(parameters[1]);  // Convert the account chosen to integer
-				double amount = stod(parameters[2]);  // Convert the deposit to double
+				int accountIndex;  // Convert account chosen to integer
+				double amount;  // Convert deposit to double
+				int parametersSize = parameters.size();
 
-				if (accountIndex < 0 || accountIndex > accounts.size()) {
-					cout << "The selected account does not exist. Please select a valid account." << endl;
-				}
-				else {
-					accounts[accountIndex - 1]->withdraw(amount);
+				switch (parametersSize)
+				{
+				case 2: // Input is deposit <sum>
+					// Check if account has been viewed
+					amount = stod(parameters[1]); // set second parameter as the amount
+
+					if (viewedAccount != nullptr) {
+						viewedAccount->withdraw(amount);
+					}
+					else cout << "You have not viewed an account yet. Please use view <account_index>. Alternative usage: withdraw <account_index> <sum>." << endl;
+					break;
+				case 3: // Input is deposit <account_index> <sum>
+					accountIndex = stoi(parameters[1]);
+					amount = stod(parameters[2]);
+					if (accountIndex <= 0 || accountIndex > accounts.size()) {
+						cout << "The selected account does not exist. Please select a valid account." << endl;
+					}
+					else {
+						accounts[accountIndex - 1]->withdraw(amount);
+					}
+					break;
+				default:
+					cout << "Invalid usage. Please use withdraw <sum>. Alternative usage: withdraw <account_index> <sum>." << endl;
+					break;
 				}
 			}
 			else if (command.compare("deposit") == 0)
