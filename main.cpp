@@ -159,7 +159,7 @@ int main()
 				{
 					// allow user to withdraw funds from an account
 					// Input Check
-					if (parameters.size() < 3) {
+					if (parameters.size() < 2) {
 						throw invalid_argument("Invalid input. Usage: withdraw <account_index> <withdraw_amount>");
 					}
 
@@ -252,12 +252,15 @@ int main()
 					int destinationIndex = stoi(parameters[2]) - 1;  // Convert the destination account chosen to an integer
 					double amount = stod(parameters[3]);  // Convert the deposit to a double
 
-					if (sourceIndex < 0 || sourceIndex >= accounts.size() || destinationIndex < 0 || destinationIndex >= accounts.size()) {
+					if (amount <= 0) {
+						throw invalid_argument("Invalid amount entered. You can only transfer amounts of positive integers.");
+					}
+					else if (sourceIndex < 0 || sourceIndex >= accounts.size() || destinationIndex < 0 || destinationIndex >= accounts.size()) {
 						throw invalid_argument("One or both of the selected accounts do not exist. Please select valid accounts.");
 					}
 
 					// Check if source and destination accounts are the same
-					if (sourceIndex == destinationIndex) {
+					else if (sourceIndex == destinationIndex) {
 						throw invalid_argument("Cannot transfer money to the same account. Please enter a valid destination account.");
 					}
 

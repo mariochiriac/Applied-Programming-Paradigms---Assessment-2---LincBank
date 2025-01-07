@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <cmath>
 #include <ctime>
 #include <iomanip>
 
@@ -10,7 +11,14 @@ using namespace std;
 
 // Method that outputs to console details of transaction
 void Transaction::toString() {
-	cout << "-- " << desc << ": " << char(156) << value << " on " << timestamp;
+	if (value >= 0) {
+		cout << "-- " << desc << ": " << char(156)
+			<< fixed << setprecision(2) << value << " on " << timestamp;
+	}
+	else {
+		cout << "-- " << desc << ": -" << char(156)
+			<< fixed << setprecision(2) << abs(value) << " on " << timestamp;
+	}
 }
 
 // Method, gets current time when transaction struct is called, adds it to timestamp member
