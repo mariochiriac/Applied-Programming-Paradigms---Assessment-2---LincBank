@@ -11,13 +11,14 @@ using namespace std;
 
 // Method that outputs to console details of transaction
 void Transaction::toString() {
-	if (value >= 0) {
+	// Display positive and negative values accurately
+	if (value >= 0) { // if value is positive
 		cout << "-- " << desc << ": " << char(156)
 			<< fixed << setprecision(2) << value << " on " << timestamp;
 	}
-	else {
-		cout << "-- " << desc << ": -" << char(156)
-			<< fixed << setprecision(2) << abs(value) << " on " << timestamp;
+	else { // if value is negative
+		cout << "-- " << desc << ": -" << char(156) // place - sign before £ sign
+			<< fixed << setprecision(2) << abs(value) << " on " << timestamp; // abs() -> converts to positive value
 	}
 }
 
