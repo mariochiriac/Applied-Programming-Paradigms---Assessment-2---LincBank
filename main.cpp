@@ -17,6 +17,8 @@ Good luck!
 #include <memory>
 #include <vector>
 #include <ctime>
+#include <string>
+#include <cstring>
 
 // Headers
 #include "BankAccounts.h"
@@ -28,13 +30,13 @@ void view_accounts(vector<Account*> accounts);
 
 int main()
 {
-	try {
 		vector <string> parameters;
 		string userCommand;
 		// you may also want to store a collection of opened accounts here
 
 		vector<Account*> accounts; // accounts created will be stored in vector
-		Savings* isa_account = nullptr;
+		Savings* isa_account = nullptr; // stores pointer to isa account
+		Account* viewedAccount = nullptr; // stores viewed account
 
 		cout << "~~~ Welcome to LincBank! ~~~" << endl;
 		cout << "open type initial_deposit: open a current (1), savings (2) or ISA (3) account" <<
@@ -63,190 +65,239 @@ int main()
 				parameters.push_back(token);
 				token = strtok(NULL, " ");
 			}
-
-			// Define all commands as per the brief
-			string command = parameters[0];
-
-			if (command.compare("options") == 0)
-			{
-				// display the various commands to the user
-				cout << "open type initial_deposit: open a current (1), savings (2) or ISA (3) account" <<
-					"\nview[index]: view balance and recent transactions" <<
-					"\nwithdraw sum : withdraw funds from most recently viewed account"
-					"\ndeposit sum : deposit funds into most recently viewed account"
-					"\ntransfer src dest sum : transfer funds between accounts"
-					"\nproject years : project balance forward in time"
-					"\nexit : close this application"
-					"\noptions : view these options again" << endl;
-			}
-			else if (command.compare("open") == 0)
-			{
-				// allow a user to open an account
-				// e.g., Account* a = new Savings(...);
-				// 
-				// Ensure that the user has provided the correct parameters
-				if (parameters.size() < 3) {
-					cout << "Invalid input. Usage: open <account_type> <initial_deposit>" << endl;
-					continue;  // Skip to the next command
+			try {
+				// Error checking
+				if (parameters.empty()) {
+					throw invalid_argument("Invalid input. Please enter a valid command.");
 				}
+				// Throw argument that outputs to console instead of crashing program
+				// Define all commands as per the brief
+				string command = parameters[0];
 
-				// Extract account type (1 for Current, 2 for Savings, 3 for ISA) and initial deposit
-				int accountType = stoi(parameters[1]);  // Convert the account type to an integer
-				double initialDeposit = stod(parameters[2]);  // Convert the initial deposit to a double
+				if (command.compare("options") == 0)
+				{
+					// display the various commands to the user
+					cout << "open type initial_deposit: open a current (1), savings (2) or ISA (3) account" <<
+						"\nview[index]: view balance and recent transactions" <<
+						"\nwithdraw sum : withdraw funds from most recently viewed account"
+						"\ndeposit sum : deposit funds into most recently viewed account"
+						"\ntransfer src dest sum : transfer funds between accounts"
+						"\nproject years : project balance forward in time"
+						"\nexit : close this application"
+						"\noptions : view these options again" << endl;
+				}
+				else if (command.compare("open") == 0)
+				{
+					// allow a user to open an account
+					// e.g., Account* a = new Savings(...);
+					// 
+					// Ensure that the user has provided the correct parameters
+					if (parameters.size() < 3) {
+						throw invalid_argument("Invalid input. Usage: open <account_type> <initial_deposit>");
+					}
 
-				if (initialDeposit < 100) {
-					cout << "You have entered an invalid initial deposit value. Please enter a valid amount." << endl;
-					continue;
-				}
+					// Extract account type (1 for Current, 2 for Savings, 3 for ISA) and initial deposit
+					int accountType = stoi(parameters[1]);  // Convert the account type to an integer
+					double initialDeposit = stod(parameters[2]);  // Convert the initial deposit to a double
 
-				// Based on the account type, create the appropriate account
-				if (accountType == 1) {
-					// Open a Current account and add it to the accounts vector
-					accounts.push_back(new Current(initialDeposit));
-				}
-				else if (accountType == 2) {
-					accounts.push_back(new Savings(initialDeposit, 0));
-				}
-				// Opening ISA Account
-				else if (accountType == 3) {
-					if (isa_account == nullptr) {
-						if (initialDeposit < 1000) {
-							// If initial deposit is smaller than 1000, output an error to console
-							cout << "ISA initial balance must be >= " << char(156) << "1000." << endl;
+					if (initialDeposit < 0) {
+						throw invalid_argument("You have entered an invalid initial deposit value. Please enter a valid amount.");
+					}
+
+					// Based on the account type, create the appropriate account
+					switch (accountType) {
+					case 1:
+						// Open a Current account and add it to the accounts vector
+						accounts.push_back(new Current(initialDeposit));
+						break;
+					case 2:
+						accounts.push_back(new Savings(initialDeposit, 0));
+						break;
+					case 3:
+						if (isa_account == nullptr) {
+							if (initialDeposit < 1000) {
+								// If initial deposit is smaller than 1000, output an error to console
+								cout << "ISA initial balance must be >= " << char(156) << "1000." << endl;
+							}
+							else {
+								// If ISA account is sucessfully created, appoint a pointer to a new ISA, and append to vector
+								isa_account = new Savings(initialDeposit, 1);
+								accounts.push_back(isa_account);
+							}
 						}
 						else {
-							// If ISA account is sucessfully created, appoint a pointer to a new ISA, and append to vector
-							isa_account = new Savings(initialDeposit, 1);
-							accounts.push_back(isa_account);
+							throw invalid_argument("ISA account already exists.");
+							break;
+						}
+						break;
+					default:
+						throw invalid_argument("Invalid account type. Please choose 1 (Current), 2 (Savings), or 3 (ISA).");
+						break;
+					}
+
+				}
+				else if (command.compare("view") == 0)
+				{
+					// display an account according to an index (starting from 1)
+					// alternatively, display all accounts if no index is provided
+					if (parameters.size() > 1) {
+						// Take parameter as account index
+						int accountIndex = stoi(parameters[1]);
+
+						// Check if account exists
+						if (accountIndex < 0 || accountIndex > accounts.size()) {
+							throw invalid_argument("The selected account does not exist. Please select a valid account.");
+						}
+						else {
+							accounts[accountIndex - 1]->toString();
+							viewedAccount = accounts[accountIndex - 1];
 						}
 					}
-					else {
-						cout << "ISA account already exists." << endl;
-						continue;
+					else view_accounts(accounts);
+				}
+				else if (command.compare("withdraw") == 0)
+				{
+					// allow user to withdraw funds from an account
+					// Input Check
+					if (parameters.size() < 3) {
+						throw invalid_argument("Invalid input. Usage: withdraw <account_index> <withdraw_amount>");
+					}
+
+					// allow user to deposit funds into an account
+					int accountIndex;  // Convert the account chosen to an integer
+					double amount;  // Convert the deposit to a double
+					int parametersSize = parameters.size();
+
+					switch (parametersSize) {
+					case 2: // Input is withdraw <sum>
+						if (viewedAccount != nullptr) {
+							// Check if account has been viewed
+							amount = stod(parameters[1]); // Convert parameter 2 to amount
+							viewedAccount->withdraw(amount); // Deposit to viewed account
+						}
+						else {
+							throw invalid_argument("You have not viewed an account. Use view <account_index>. // Alternative Usage: withdraw <account_index> <amount>.");
+						}
+						break;
+					case 3: // Input is withdraw <account_index> <amount>
+						// Convert parameters 2 and 3 to account selected and amount
+						accountIndex = stoi(parameters[1]);
+						amount = stod(parameters[2]);
+
+						// Check if account exists
+						if (accountIndex < 0 || accountIndex > accounts.size()) {
+							throw invalid_argument("The selected account does not exist. Please select a valid account.");
+						}
+						else {
+							accounts[accountIndex - 1]->withdraw(amount);
+						}
+						break;
+					default:
+						throw invalid_argument("Invalid amount of parameters. Please use withdraw <sum>. // Alternative usage: withdraw <account_index> <amount>.");
+						break;
 					}
 				}
-				else {
-					// Invalid account type
-					cout << "Invalid account type. Please choose 1 (Current), 2 (Savings), or 3 (ISA)." << endl;
-				}
+				else if (command.compare("deposit") == 0)
+				{
+					// Input Check
+					if (parameters.size() < 2) {
+						throw invalid_argument("Invalid input. Usage: deposit <account_index> <deposit_amount>");
+					}
 
+					// allow user to deposit funds into an account
+					int accountIndex;  // Convert the account chosen to an integer
+					double amount;  // Convert the deposit to a double
+					int parametersSize = parameters.size();
+
+					switch (parametersSize) {
+					case 2: // Input is deposit <sum>
+						if (viewedAccount != nullptr) {
+							// Check if account has been viewed
+							amount = stod(parameters[1]); // Convert parameter 2 to amount
+							viewedAccount->deposit(amount); // Deposit to viewed account
+						}
+						else {
+							throw invalid_argument("You have not viewed an account. Use view <account_index>. // Alternative Usage: deposit <account_index> <amount>.");
+						}
+						break;
+					case 3: // Input is deposit <account_index> <amount>
+						// Convert parameters 2 and 3 to account selected and amount
+						accountIndex = stoi(parameters[1]);
+						amount = stod(parameters[2]);
+
+						// Check if account exists
+						if (accountIndex < 0 || accountIndex > accounts.size()) {
+							throw invalid_argument("The selected account does not exist. Please select a valid account.");
+						}
+						else {
+							accounts[accountIndex - 1]->deposit(amount);
+						}
+						break;
+					default:
+						throw invalid_argument("Invalid amount of parameters. Please use deposit <sum>. // Alternative usage: deposit <account_index> <amount>.");
+						break;
+					}
+				}
+				else if (command.compare("transfer") == 0)
+				{
+					// allow user to transfer funds between accounts
+					// i.e., a withdrawal followed by a deposit!
+					// Input Check
+					if (parameters.size() < 4) {
+						throw invalid_argument("Invalid input. Usage: transfer <source_index> <destination_index> <amount>");
+					}
+
+					// allow user to deposit funds into an account
+					int sourceIndex = stoi(parameters[1]) - 1;  // Convert the source account chosen to an integer
+					int destinationIndex = stoi(parameters[2]) - 1;  // Convert the destination account chosen to an integer
+					double amount = stod(parameters[3]);  // Convert the deposit to a double
+
+					if (sourceIndex < 0 || sourceIndex >= accounts.size() || destinationIndex < 0 || destinationIndex >= accounts.size()) {
+						throw invalid_argument("One or both of the selected accounts do not exist. Please select valid accounts.");
+					}
+
+					// Check if source and destination accounts are the same
+					if (sourceIndex == destinationIndex) {
+						throw invalid_argument("Cannot transfer money to the same account. Please enter a valid destination account.");
+					}
+
+
+					accounts[sourceIndex]->transfer(accounts, sourceIndex, destinationIndex, amount);
+				}
+				else if (command.compare("project") == 0)
+				{
+					// compute compound interest t years into the future
+					// Check parameters
+					if (parameters.size() < 2) {
+						throw invalid_argument("Invalid input. Usage: project <years>");
+					}
+
+					int years = stoi(parameters[1]);
+
+					if (isa_account == nullptr) {
+						// If ISA account does not exist, output to console
+						throw invalid_argument("ISA account does not exist. Unable to project balance.");
+					}
+					else isa_account->computeInterest(years);
+				}
+				//else if (command.compare("search"))
+				//{
+				//	allow users to search their account history for a transaction
+				//  (this is a stretch task)
+				//}
 			}
-			else if (command.compare("view") == 0)
-			{
-				// display an account according to an index (starting from 1)
-				// alternatively, display all accounts if no index is provided
-				if (parameters.size() > 1) {
-					// Take parameter as account index
-					int accountIndex = stoi(parameters[1]);
-
-					// Check if account exists
-					if (accountIndex < 0 || accountIndex > accounts.size()) {
-						cout << "The selected account does not exist. Please select a valid account." << endl;
-					} 
-					else accounts[accountIndex - 1]->toString();
-				}
-				else view_accounts(accounts);
+			catch (const exception& e) {
+				cout << "Error: " << e.what() << endl;
 			}
-			else if (command.compare("withdraw") == 0)
-			{
-				// allow user to withdraw funds from an account
-				// Input Check
-				if (parameters.size() < 3) {
-					cout << "Invalid input. Usage: withdraw <account_index> <withdraw_amount>" << endl;
-					continue;  // Skip to the next command
-				}
-
-				// allow user to deposit funds into an account
-				int accountIndex = stoi(parameters[1]);  // Convert the account chosen to an integer
-				double amount = stod(parameters[2]);  // Convert the deposit to a double
-
-				if (accountIndex < 0 || accountIndex > accounts.size()) {
-					cout << "The selected account does not exist. Please select a valid account." << endl;
-				}
-				else {
-					accounts[accountIndex - 1]->withdraw(amount);
-				}
-			}
-			else if (command.compare("deposit") == 0)
-			{
-				// Input Check
-				if (parameters.size() < 3) {
-					cout << "Invalid input. Usage: deposit <account_index> <deposit_amount>" << endl;
-					continue;  // Skip to the next command
-				}
-
-				// allow user to deposit funds into an account
-				int accountIndex = stoi(parameters[1]);  // Convert the account chosen to an integer
-				double amount = stod(parameters[2]);  // Convert the deposit to a double
-
-				if (accountIndex < 0 || accountIndex > accounts.size()) {
-					cout << "The selected account does not exist. Please select a valid account." << endl;
-				}
-				else {
-					accounts[accountIndex - 1]->deposit(amount);
-				}
-			}
-			else if (command.compare("transfer") == 0)
-			{
-				// allow user to transfer funds between accounts
-				// i.e., a withdrawal followed by a deposit!
-				// Input Check
-				if (parameters.size() < 4) {
-					cout << "Invalid input. Usage: transfer <source_index> <destination_index> <amount>" << endl;
-					continue;  // Skip to the next command
-				}
-
-
-				// allow user to deposit funds into an account
-				int sourceIndex = stoi(parameters[1]);  // Convert the source account chosen to an integer
-				int destinationIndex = stoi(parameters[2]);  // Convert the destination account chosen to an integer
-				double amount = stod(parameters[3]);  // Convert the deposit to a double
-
-				if (sourceIndex && destinationIndex < 0 || sourceIndex && destinationIndex > accounts.size()) {
-					cout << "The selected account does not exist. Please select a valid account." << endl;
-					continue;
-				}
-				else if (sourceIndex == destinationIndex) {
-					cout << "Cannot transfer money to the same account. Please enter a valid destination account." << endl;
-					continue;
-				}
-
-				accounts[sourceIndex - 1]->transfer(accounts, sourceIndex, destinationIndex, amount);
-			}
-			else if (command.compare("project") == 0)
-			{
-				// compute compound interest t years into the future
-				// Check parameters
-				if (parameters.size() < 2) {
-					cout << "Invalid input. Usage: project <years>" << endl;
-					continue;  // Skip to the next command
-				}
-				
-				int years = stoi(parameters[1]);
-
-				if (isa_account == nullptr) {
-					// If ISA account does not exist, output to console
-					cout << "ISA account does not exist. Unable to project balance." << endl;
-					continue;
-				}
-				else isa_account->computeInterest(years);
-			}
-			//else if (command.compare("search"))
-			//{
-			//	allow users to search their account history for a transaction
-			//  (this is a stretch task)
-			//}
-
 		}
+		// Free up memory
+		delete viewedAccount;
+		delete isa_account;
 		for (auto& account : accounts) {
 			delete account;
 		}
 		cout << "Press ENTER to quit...";
 		return getchar();
-	}
-	catch (const exception& e) {
-		cout << "Error: " << e.what() << endl;
-	}
 }
 
 void view_accounts(vector<Account*> accounts) {
