@@ -44,7 +44,7 @@ void Current::withdraw(double amount) {
 		}
 		else {
 			// Withdrawal requires overdraft but does not exceed the overdraft limit
-			if (amount <= ((500 - overdraft) + balance)) {
+			if (amount < ((500 - overdraft) + balance)) {
 				double remaining = amount - balance; // // Calculate the amount needed from overdraft
 				balance = 0; // Deplete balance
 				overdraft += remaining; // Add the rest to overdraft

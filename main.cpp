@@ -35,7 +35,8 @@ int main()
 		// you may also want to store a collection of opened accounts here
 
 		vector<Account*> accounts; // accounts created will be stored in vector
-		Savings* isa_account = nullptr; // stores pointer to isa account
+		Current* currentAccount = nullptr; // stores pointer to current account
+		Savings* isaAccount = nullptr; // stores pointer to isa account
 		Account* viewedAccount = nullptr; // stores viewed account
 
 		cout << "~~~ Welcome to LincBank! ~~~" << endl;
@@ -106,23 +107,29 @@ int main()
 
 					// Based on the account type, create the appropriate account
 					switch (accountType) {
-					case 1:
-						// Open a Current account and add it to the accounts vector
-						accounts.push_back(new Current(initialDeposit));
+					case 1: // open a current account
+						if (currentAccount == nullptr) {
+							// Open a Current account and add it to the accounts vector
+							currentAccount = new Current(initialDeposit);
+							accounts.push_back(currentAccount);
+						}
+						else {
+							throw invalid_argument("Current account already exists. You can only create 1 Current Account.");
+						}
 						break;
-					case 2:
+					case 2: // open a savings account
 						accounts.push_back(new Savings(initialDeposit, 0));
 						break;
-					case 3:
-						if (isa_account == nullptr) {
+					case 3: // open a isa account
+						if (isaAccount == nullptr) {
 							if (initialDeposit < 1000) {
 								// If initial deposit is smaller than 1000, output an error to console
 								cout << "ISA initial balance must be >= " << char(156) << "1000." << endl;
 							}
 							else {
 								// If ISA account is sucessfully created, appoint a pointer to a new ISA, and append to vector
-								isa_account = new Savings(initialDeposit, 1);
-								accounts.push_back(isa_account);
+								isaAccount = new Savings(initialDeposit, 1);
+								accounts.push_back(isaAccount);
 							}
 						}
 						else {
@@ -277,11 +284,11 @@ int main()
 
 					int years = stoi(parameters[1]);
 
-					if (isa_account == nullptr) {
+					if (isaAccount == nullptr) {
 						// If ISA account does not exist, output to console
 						throw invalid_argument("ISA account does not exist. Unable to project balance.");
 					}
-					else isa_account->computeInterest(years);
+					else isaAccount->computeInterest(years);
 				}
 				//else if (command.compare("search"))
 				//{
@@ -295,7 +302,7 @@ int main()
 		}
 		// Free up memory
 		delete viewedAccount;
-		delete isa_account;
+		delete isaAccount;
 		for (auto& account : accounts) {
 			delete account;
 		}
