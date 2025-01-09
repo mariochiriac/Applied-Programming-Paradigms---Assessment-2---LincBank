@@ -134,7 +134,6 @@ int main()
 						}
 						else {
 							throw invalid_argument("ISA account already exists.");
-							break;
 						}
 						break;
 					default:
@@ -301,13 +300,15 @@ int main()
 			}
 		}
 		// Free up memory
-		delete viewedAccount;
-		delete isaAccount;
 		for (auto& account : accounts) {
 			delete account;
 		}
+		currentAccount = nullptr;
+		isaAccount = nullptr;
+		viewedAccount = nullptr;
+
 		cout << "Press ENTER to quit...";
-		return getchar();
+		return 0;
 }
 
 void view_accounts(vector<Account*> accounts) {

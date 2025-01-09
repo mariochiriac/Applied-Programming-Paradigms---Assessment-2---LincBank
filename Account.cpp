@@ -22,7 +22,7 @@ void Account::withdraw(double amount) {
 	// Check if amount to be withdrawn is positive
 	if (amount <= 0) cout << "Invalid amount entered. You can only withdraw amounts of positive integers." << endl;
 	else {
-		if (amount < balance) {
+		if (amount <= balance) {
 			balance -= amount;
 			history.push_back(Transaction("withdraw", amount));
 			toString();
