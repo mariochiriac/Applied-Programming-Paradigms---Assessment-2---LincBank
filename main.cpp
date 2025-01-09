@@ -311,6 +311,7 @@ int main()
 		return 0;
 }
 
+// Implement Methods
 void view_accounts(vector<Account*> accounts) {
 	for (auto& i : accounts) {
 		i->toString();
